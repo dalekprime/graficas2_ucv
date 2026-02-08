@@ -65,5 +65,5 @@ Para soportar escalas no uniformes sin deformar la iluminación, las normales se
 
 # **Autor**
 
-Desarrollado para la cátedra de Introducción a la Computación Gráfica. 
-Universidad Central de Venezuela (UCV). Por Bryan Silva, 2026.
+*Desarrollado para la cátedra de Introducción a la Computación Gráfica. 
+Universidad Central de Venezuela (UCV). Por Bryan Silva, 2026.*
