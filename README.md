@@ -36,7 +36,7 @@ Para soportar escalas no uniformes sin deformar la iluminación, las normales se
 
 * Se asume que al hacer clic en el fondo, se deselecciona el sub-mallado actual y se pasa al control de rotación global del objeto.
 
-* Se asume que los archivos .obj y .mtl se encuentran en el mismo directorio relativo al ejecutable para simplificar la carga.
+* Se asume que los archivos .obj y .mtl se encuentran en el mismo directorioz (/objetos3D) relativo al ejecutable para simplificar la carga.
 
 
 ## Controles

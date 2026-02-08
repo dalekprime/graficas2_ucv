@@ -147,13 +147,15 @@ void C3DViewer::onCursorPos(double xpos, double ypos) {
     lastMouseY = ypos;
 }
 
-bool C3DViewer::loadOBJ(const std::string& path) {
+bool C3DViewer::loadOBJ(const std::string& filename) {
+    std::string modelsDir = "objetos3D/";
+    std::string fullPath = modelsDir + filename;
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
-    std::string baseDir = path.substr(0, path.find_last_of("/\\") + 1);
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), baseDir.c_str());
+    std::string baseDir = fullPath.substr(0, fullPath.find_last_of("/\\") + 1);
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fullPath.c_str(), baseDir.c_str());
     if (!warn.empty()) std::cout << "OBJ Warning: " << warn << std::endl;
     if (!err.empty()) std::cerr << "OBJ Error: " << err << std::endl;
     if (!ret) return false;
