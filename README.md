@@ -2,7 +2,7 @@
 
 Este proyecto implementa un visualizador de geometría 3D robusto utilizando C++ y OpenGL Moderno (Core Profile). Permite la carga, visualización, manipulación y exportación de modelos en formato OBJ, cumpliendo con estándares de computación gráfica interactiva.
 
-# Funcionalidades Principales
+## Funcionalidades Principales
 
 * Inicialización y Carga: Soporte completo para archivos .obj y sus materiales vinculados .mtl.
 Al cargar, el modelo se escala y centra automáticamente para una visualización inicial óptima. 
@@ -19,7 +19,7 @@ Control de Z-Buffer, Back-Face Culling y Antialiasing de líneas.
 
 * Exportación: Capacidad de guardar el modelo modificado. La exportación aplica las matrices de transformación a los vértices y normales, generando nuevos archivos .obj y .mtl listos para usar en software externo.
 
-# Decisiones de Diseño
+## Decisiones de Diseño
 
 * Arquitectura Monolítica: Se optó por encapsular la lógica en una clase principal C3DViewer para mantener el estado global de OpenGL y GLFW centralizado. Esto facilita la gestión del ciclo de vida de la aplicación.
 
@@ -30,7 +30,7 @@ Para soportar escalas no uniformes sin deformar la iluminación, las normales se
 
 * Uso de Cuaterniones: Para la rotación global con el ratón, se utilizan cuaterniones en lugar de ángulos de Euler. Esto permite acumular rotaciones en ejes arbitrarios de manera suave y matemáticamente estable.
 
-# Asunciones del Enunciado
+## Asunciones del Enunciado
 
 * Se asume que el color difuso es la propiedad principal para la visualización. Propiedades como especularidad o texturas se leen pero no se renderizan, priorizando la geometría y el color base.
 
@@ -39,7 +39,7 @@ Para soportar escalas no uniformes sin deformar la iluminación, las normales se
 * Se asume que los archivos .obj y .mtl se encuentran en el mismo directorio relativo al ejecutable para simplificar la carga.
 
 
-# Controles
+## Controles
 
 * Rotar Cámara: Clic Derecho + Arrastrar.
 
@@ -51,7 +51,7 @@ Para soportar escalas no uniformes sin deformar la iluminación, las normales se
 
 * Interfaz: Mouse. Control de parámetros en panel ImGui.
 
-# Librerías y Dependencias
+## Librerías y Dependencias
 
 * GLFW: Gestión de ventana y contexto OpenGL.
 
