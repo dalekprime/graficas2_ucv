@@ -345,10 +345,11 @@ void C3DViewer::render() {
     glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniform1i(glGetUniformLocation(m_shaderProgram, "isPicking"), 0);
     glUniform1i(glGetUniformLocation(m_shaderProgram, "useFlatColor"), 0);
-    glBindVertexArray(m_vao);
+    //glBindVertexArray(m_vao);
     unsigned int offset = 0;
     // SubMesh
     for (int i = 0; i < m_subMeshes.size(); i++) {
+        glBindVertexArray(m_vao);
         SubMesh& sub = m_subMeshes[i];
         if (!sub.visible) { offset += sub.indices.size(); continue; }
         glm::mat4 localModel = globalModel;
