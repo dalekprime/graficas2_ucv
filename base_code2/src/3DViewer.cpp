@@ -101,16 +101,25 @@ void C3DViewer::onMouseButton(int button, int action, int mods) {
         glfwGetCursorPos(m_window, &x, &y);
         lastMouseX = x; lastMouseY = y;
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
+            bool forceRotation = (glfwGetKey(m_window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS);
             int picked = pickObject(x, y);
-            if (picked != -1) {
-                m_selectedSubMeshIndex = picked;
-                m_showBoundingBox = true;
-                isDragging = false;
-            }
-            else {
+            if (forceRotation) {
                 m_selectedSubMeshIndex = -1;
                 m_showBoundingBox = false;
                 isDragging = true;
+            }
+            else {
+                int picked = pickObject(x, y);
+                if (picked != -1) {
+                    m_selectedSubMeshIndex = picked;
+                    m_showBoundingBox = true;
+                    isDragging = false;
+                }
+                else {
+                    m_selectedSubMeshIndex = -1;
+                    m_showBoundingBox = false;
+                    isDragging = true;
+                }
             }
         }
     }
@@ -255,6 +264,7 @@ void C3DViewer::calculateBoundingBox() {
 }
 
 void C3DViewer::computeNormals() {
+    if (m_vertices.empty()) return;
     for (size_t i = 0; i < m_vertices.size(); i += 3) {
         // Verificar que no nos salimos del vector 
         if (i + 2 >= m_vertices.size()) break;
@@ -331,7 +341,16 @@ void C3DViewer::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if (m_enableZBuffer) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
     if (m_enableCulling) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
-    if (m_enableAntiAliasing) glEnable(GL_LINE_SMOOTH); else glDisable(GL_LINE_SMOOTH);
+    if (m_enableAntiAliasing) {
+		// Ahora si esta el Blending para suavizar líneas
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+    else {
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+    }
     glUseProgram(m_shaderProgram);
     // Matrices
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / height, 0.1f, 100.0f);
@@ -390,7 +409,14 @@ void C3DViewer::render() {
             glUniform1i(glGetUniformLocation(m_shaderProgram, "useFlatColor"), 0);
         }
         if (m_showNormals) {
-            drawNormals(localModel, view, projection);
+            if (m_vao_normals == 0) updateNormalBuffers();
+            glUniform1i(glGetUniformLocation(m_shaderProgram, "useFlatColor"), 1);
+            glUniform3fv(glGetUniformLocation(m_shaderProgram, "uColor"), 1, glm::value_ptr(m_normalsColor));
+            glBindVertexArray(m_vao_normals);
+            // Dibujamos solo las normales de este sub-mallado
+            glDrawArrays(GL_LINES, offset * 2, sub.indices.size() * 2);
+            glBindVertexArray(m_vao); // Restaurar vao principal
+            glUniform1i(glGetUniformLocation(m_shaderProgram, "useFlatColor"), 0);
         }
         if (i == m_selectedSubMeshIndex && m_showBoundingBox) {
             drawBoundingBox(sub.min, sub.max, localModel, view, projection, m_boundingBoxColor);
@@ -444,10 +470,13 @@ void C3DViewer::drawInterface() {
             m_globalRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
             m_globalScale = glm::vec3(1.0f);
         }
-        ImGui::SameLine();
+        ImGui::Separator();
+        static char exportName[128] = "modelo_exportado.obj";
+        ImGui::InputText("Archivo de Salida", exportName, sizeof(exportName));
         if (ImGui::Button("Exportar OBJ")) {
-            exportOBJ("modelo_modificado.obj");
+            exportOBJ(exportName);
         }
+        ImGui::Separator();
     }
     // OPCIONES DE RENDERIZADO GLOBAL 
     if (ImGui::CollapsingHeader("Opciones de Visualizacion")) {
@@ -633,6 +662,7 @@ void C3DViewer::drawBoundingBox(const glm::vec3& min, const glm::vec3& max, cons
 }
 
 void C3DViewer::updateNormalBuffers() {
+    if (m_vertices.empty()) return;
     std::vector<float> lineVertices;
     float len = m_boundingBoxDiagonal * m_normalLengthPercent;
     for (const auto& v : m_vertices) {
@@ -657,17 +687,6 @@ void C3DViewer::updateNormalBuffers() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
-}
-
-void C3DViewer::drawNormals(const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj) {
-    if (m_vao_normals == 0) updateNormalBuffers();
-    glUniform1i(glGetUniformLocation(m_shaderProgram, "useFlatColor"), 1);
-    glUniform3fv(glGetUniformLocation(m_shaderProgram, "uColor"), 1, glm::value_ptr(m_normalsColor));
-    glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glBindVertexArray(m_vao_normals);
-    glDrawArrays(GL_LINES, 0, m_normalCount);
-    glBindVertexArray(0);
-    glUniform1i(glGetUniformLocation(m_shaderProgram, "useFlatColor"), 0);
 }
 
 void C3DViewer::resetView() {

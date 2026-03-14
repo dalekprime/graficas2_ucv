@@ -63,7 +63,6 @@ private:
     // Picking
     int pickObject(double x, double y); 
     // Dibujo auxiliar
-    void drawNormals(const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj);
     void drawBoundingBox(const glm::vec3& min, const glm::vec3& max, const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj, glm::vec3 color);
     static void keyCallbackStatic(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouseButtonCallbackStatic(GLFWwindow* window, int button, int action, int mods);
